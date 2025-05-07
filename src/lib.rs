@@ -2,7 +2,7 @@ use std::{
     env::set_var,
     error::Error,
     fs::{create_dir, exists},
-    path::Path,
+    path::{Path, PathBuf},
     time::Duration,
 };
 
@@ -22,6 +22,10 @@ fn decompress_tar_xz_stream(data: Bytes) -> Result<(), Box<dyn std::error::Error
     Ok(())
 }
 
+pub fn llvm_path() -> PathBuf {
+    Path::new(LLVM_CACHE_PREFIX).join(CURRENT_LLVM)
+}
+
 pub fn bundle_cache() -> Result<(), Box<dyn Error>> {
     if !exists(LLVM_CACHE_PREFIX).unwrap_or(false) {
         create_dir(LLVM_CACHE_PREFIX).unwrap();
@@ -31,7 +35,7 @@ pub fn bundle_cache() -> Result<(), Box<dyn Error>> {
         let response = client.get(LINUX_ARTIFACT_URL).send()?.bytes()?;
         decompress_tar_xz_stream(response)?;
     }
-    let llvm_path = Path::new(LLVM_CACHE_PREFIX).join(CURRENT_LLVM);
+    let llvm_path = llvm_path();
     let libclang_path = llvm_path.join("lib");
     unsafe {
         //The build.rs should not be multithreaded at this point.
