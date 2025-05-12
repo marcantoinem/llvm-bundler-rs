@@ -24,6 +24,8 @@
             pkg-config
             openssl.dev
             openssl
+            cmake
+            ninja
           ];
           LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.openssl ];
           PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
