@@ -47,10 +47,12 @@ pub fn bundle_cache() -> Result<(), Box<dyn Error>> {
             std::thread::sleep(Duration::from_secs(1));
         }
     }
+    let libclang_path = llvm_path.join("lib");
     unsafe {
         //The build.rs should not be multithreaded at this point.
         set_var("TABLEGEN_200_PREFIX", &llvm_path);
         set_var("MLIR_SYS_200_PREFIX", &llvm_path);
+        set_var("LIBCLANG_PATH", libclang_path);
     }
     Ok(())
 }
