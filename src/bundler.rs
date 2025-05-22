@@ -48,11 +48,13 @@ pub fn bundle_cache() -> Result<(), Box<dyn Error>> {
         }
     }
     let libclang_path = llvm_path.join("lib");
+    let include_path = llvm_path.join("include");
     unsafe {
         //The build.rs should not be multithreaded at this point.
         set_var("TABLEGEN_200_PREFIX", &llvm_path);
         set_var("MLIR_SYS_200_PREFIX", &llvm_path);
         set_var("LIBCLANG_PATH", libclang_path);
+        set_var("LLVM_INCLUDE_DIRECTORY", include_path);
     }
     Ok(())
 }
