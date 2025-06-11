@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install -y cmake ninja-build git
 
       - name: Build and package LLVM
-        run: bash build-llvm.sh
+        run: bash build_llvm.sh
 
       - name: Create Release
         id: create_release
