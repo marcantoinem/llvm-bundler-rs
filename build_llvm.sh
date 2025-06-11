@@ -1,13 +1,18 @@
+#!/bin/bash
+
+set -e
+
 mkdir -p .llvm
 cd .llvm
 
-rm -fr llvm
-mkdir -p llvm
-rm -fr llvm-project
+rm -rf llvm llvm-project
+
 git clone https://github.com/llvm/llvm-project.git
 cd llvm-project
 git checkout llvmorg-20.1.4
-rm -fr build
+
+rm -rf build
+mkdir -p build
 
 cmake -S llvm -B build -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
@@ -29,5 +34,12 @@ cmake -S llvm -B build -G Ninja \
   -DCMAKE_INSTALL_PREFIX=../llvm
 
 ninja -C build install
+
+cd ../llvm
+mv bin/llvm-config .
+rm bin/*
+mv llvm-config bin/
 cd ..
 tar -cJf linux-x64.tar.xz llvm
+
+echo "LLVM build and packaging completed successfully!"
