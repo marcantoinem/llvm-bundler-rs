@@ -1,7 +1,11 @@
 [package]
 name = "llvm-bundler-rs"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
+license = "MIT OR Apache-2.0"
+description = "A bundler to download automatically LLVM and MLIR"
+repository = "https://github.com/marcantoinem/llvm-bundler-rs"
+readme = "README.md"
 
 [features]
 bundled = ["dep:reqwest", "dep:liblzma", "dep:tar", "dep:bytes", "dep:dirs"]
