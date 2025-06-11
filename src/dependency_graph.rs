@@ -25,7 +25,7 @@ impl DerefMut for DependencyGraph {
 
 impl DependencyGraph {
     pub fn from_cmake(path: impl AsRef<Path>) -> io::Result<DependencyGraph> {
-        let content = fs::read_to_string(path).expect("Failed to read file");
+        let content = fs::read_to_string(path)?;
 
         let re_target = Regex::new(r#"add_library\(([a-zA-Z0-9]+) STATIC IMPORTED\)"#).unwrap();
         let mut static_libs = HashSet::new();
@@ -51,7 +51,7 @@ impl DependencyGraph {
         }
         // Necessary if some static_libs like MLIRTableGen, doesn't have any dependency
         for lib in &static_libs {
-            graph.entry(lib.to_string()).or_insert_with(Vec::new);
+            graph.entry(lib.to_string()).or_default();
         }
         Ok(Self(graph))
     }

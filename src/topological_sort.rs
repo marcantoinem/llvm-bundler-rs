@@ -25,7 +25,7 @@ impl TopologicalSort {
         }
         let children = graph.get(node).unwrap();
         for child in children {
-            self.dfs(child, &graph);
+            self.dfs(child, graph);
         }
         self.visited.insert(node.to_string());
         self.ordered_list.push(node.to_string());
