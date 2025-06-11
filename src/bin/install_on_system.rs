@@ -1,10 +1,13 @@
-#![cfg(feature = "bundled")]
-
 use std::error::Error;
 
-use llvm_bundler_rs::bundler::bundle_cache;
-
+#[cfg(feature = "bundled")]
 fn main() -> Result<(), Box<dyn Error>> {
-    bundle_cache()?;
+    llvm_bundler_rs::bundler::bundle_cache()?;
+    Ok(())
+}
+
+#[cfg(not(feature = "bundled"))]
+fn main() -> Result<(), Box<dyn Error>> {
+    println!("This example needs to be run with the --features bundled");
     Ok(())
 }
