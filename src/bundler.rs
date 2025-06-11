@@ -12,8 +12,7 @@ use dirs::data_local_dir;
 use liblzma::bufread::XzDecoder;
 use tar::Archive;
 
-const LINUX_ARTIFACT_URL: &str =
-    "https://github.com/marcantoinem/llvm-bundler-rs/releases/download/v0.0.1/linux-x64.tar.xz";
+const LINUX_ARTIFACT_URL: &str = "https://github.com/marcantoinem/llvm-bundler-rs/releases/download/master/llvm-linux-x64.tar.xz";
 const LLVM_CACHE_PREFIX: &str = "llvm";
 const FINISH_FILE_MUTEX: &str = "complete";
 
