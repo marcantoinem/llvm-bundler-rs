@@ -1,7 +1,8 @@
 use std::{
     env::set_var,
-    error::Error,
+    error, fmt,
     fs::{self, create_dir, exists},
+    io,
     path::PathBuf,
     time::Duration,
 };
@@ -16,23 +17,56 @@ const LINUX_ARTIFACT_URL: &str =
 const LLVM_CACHE_PREFIX: &str = "llvm";
 const FINISH_FILE_MUTEX: &str = "complete";
 
-pub fn llvm_path() -> Result<PathBuf, String> {
-    data_local_dir()
-        .map(|p| p.join(LLVM_CACHE_PREFIX))
-        .ok_or("System not supported".to_string())
+#[derive(Debug)]
+pub enum BundlingError {
+    UnsupportedSystem,
+    IoError(io::Error),
+    NetworkError(reqwest::Error),
 }
 
-fn decompress_tar_xz_stream(data: Bytes) -> Result<(), Box<dyn std::error::Error>> {
+impl error::Error for BundlingError {}
+
+impl fmt::Display for BundlingError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            BundlingError::UnsupportedSystem => write!(f, "Unsupported system"),
+            BundlingError::IoError(error) => write!(f, "{}", error),
+            BundlingError::NetworkError(error) => write!(f, "{}", error),
+        }
+    }
+}
+
+impl From<io::Error> for BundlingError {
+    fn from(value: io::Error) -> Self {
+        BundlingError::IoError(value)
+    }
+}
+
+impl From<reqwest::Error> for BundlingError {
+    fn from(value: reqwest::Error) -> Self {
+        BundlingError::NetworkError(value)
+    }
+}
+
+pub type Result<T> = std::result::Result<T, BundlingError>;
+
+pub fn llvm_path() -> Result<PathBuf> {
+    data_local_dir()
+        .map(|p| p.join(LLVM_CACHE_PREFIX))
+        .ok_or(BundlingError::UnsupportedSystem)
+}
+
+fn decompress_tar_xz_stream(data: Bytes) -> Result<()> {
     let cursor = std::io::Cursor::new(data);
     let decoder = XzDecoder::new_parallel(cursor);
     let mut archive = Archive::new(decoder);
-    let local_dir = data_local_dir().ok_or("System not supported".to_string())?;
+    let local_dir = data_local_dir().ok_or(BundlingError::UnsupportedSystem)?;
     archive.unpack(&local_dir)?;
     fs::write(llvm_path()?.join(FINISH_FILE_MUTEX), b"")?;
     Ok(())
 }
 
-pub fn bundle_cache() -> Result<(), Box<dyn Error>> {
+pub fn bundle_cache() -> Result<()> {
     let llvm_path = llvm_path()?;
     if !exists(&llvm_path).unwrap_or(false) {
         create_dir(&llvm_path).unwrap();
