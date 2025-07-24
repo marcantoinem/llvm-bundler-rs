@@ -17,7 +17,7 @@ mkdir -p build
 cmake -S llvm -B build -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
   -DBUILD_SHARED_LIBS=OFF \
-  -DLLVM_ENABLE_PROJECTS="clang;mlir;compiler-rt" \
+  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;mlir;compiler-rt" \
   -DLLVM_TARGETS_TO_BUILD="X86" \
   -DLLVM_BUILD_TESTS=OFF \
   -DLLVM_INCLUDE_TESTS=OFF \
